@@ -65,6 +65,10 @@ void mtxDestroy (MTXMatrix* self_p) {
     *self_p = NULL;
 }
 
+double mtxGetElement (const MTXMatrix self, unsigned i, unsigned j) {
+    return self->rep_p[i][j];
+}
+
 void mtxPrint (const MTXMatrix self) {
     int i, j;
 

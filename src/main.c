@@ -12,6 +12,8 @@ int main (void) {
     mtxDestroy(&mtx_3_3);
     printf("%p\n", mtx_3_3);
 
+    printf("%f\n", mtxGetElement(mtx_5_6, 0, 1));
+
     return 0;
 }
 
