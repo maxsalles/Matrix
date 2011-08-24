@@ -69,6 +69,42 @@ double mtxGetElement (const MTXMatrix self, unsigned i, unsigned j) {
     return self->rep_p[i][j];
 }
 
+MTXMatrix mtxGetRow (const MTXMatrix self, unsigned i) {
+    int j;
+    MTXMatrix line_return = _alloc(1, self->columns);
+
+    for (j = 0; j < self->columns; j ++)
+        line_return->rep_p[0][j] = self->rep_p[i][j];
+
+    return line_return;
+}
+
+MTXMatrix mtxGetColumn (const MTXMatrix self, unsigned j) {
+    int i;
+    MTXMatrix line_return = _alloc(self->rows, 1);
+
+    for (i = 0; i < self->rows; i ++)
+        line_return->rep_p[i][0] = self->rep_p[i][j];
+
+    return line_return;
+}
+
+void mtxSetElement (MTXMatrix self, unsigned i, unsigned j, double num) {
+    self->rep_p[i][j] = num;
+}
+
+void mtxTranspose (MTXMatrix self) {
+
+}
+
+void mtxScalarMul (MTXMatrix self, double num) {
+    int i, j;
+
+    for (i = 0; i < self->rows; i ++)
+        for (j = 0; j < self->columns; j ++)
+            self->rep_p[i][j] *= num;
+}
+
 void mtxPrint (const MTXMatrix self) {
     int i, j;
 

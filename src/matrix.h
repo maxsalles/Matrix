@@ -17,9 +17,9 @@ MTXMatrix mtxCopy (const MTXMatrix matrix);
 void mtxDestroy (MTXMatrix* self_p);
 
 double mtxGetElement (const MTXMatrix self, unsigned i, unsigned j);
-MTXMatrix mtxGetLine (const MTXMatrix self, unsigned i);
-MTXMatrix mtxGetRow (const MTXMatrix self, unsigned j);
-void mtxSetElement (MTXMatrix self, unsigned i, unsigned j);
+MTXMatrix mtxGetRow (const MTXMatrix self, unsigned i);
+MTXMatrix mtxGetColumn (const MTXMatrix self, unsigned j);
+void mtxSetElement (MTXMatrix self, unsigned i, unsigned j, double num);
 void mtxTranspose (MTXMatrix self);
 void mtxScalarMul (MTXMatrix self, double num);
 void mtxAdd (MTXMatrix self, const MTXMatrix matrix);
