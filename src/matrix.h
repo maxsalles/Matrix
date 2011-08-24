@@ -13,7 +13,7 @@ typedef struct MTXMatrix_ST* MTXMatrix;
 /* ========================================================================== */
 
 MTXMatrix mtxNew (unsigned rows, unsigned columns);
-void mtxCopy (MTXMatrix self, const MTXMatrix matrix);
+MTXMatrix mtxCopy (const MTXMatrix matrix);
 void mtxDestroy (MTXMatrix* self_p);
 
 double mtxGetElement (const MTXMatrix self, unsigned i, unsigned j);

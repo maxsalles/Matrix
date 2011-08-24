@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include "matrix.h"
 
 int main (void) {
@@ -6,6 +8,9 @@ int main (void) {
 
     mtxPrint(mtx_3_3);
     mtxPrint(mtx_5_6);
+
+    mtxDestroy(&mtx_3_3);
+    printf("%p\n", mtx_3_3);
 
     return 0;
 }
