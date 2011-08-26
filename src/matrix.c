@@ -19,17 +19,22 @@ struct MTXMatrix_ST {
 
 /* ========================================================================== */
 
-static MTXMatrix _alloc (unsigned rows, unsigned columns) {
+static double** _allocRep (unsigned rows, unsigned columns) {
     int i;
-    MTXMatrix mtx_return = (MTXMatrix) malloc(sizeof(struct MTXMatrix_ST));
     double* data_p = (double*) malloc(sizeof(double) * rows * columns);
     double** rep_p = (double**) malloc(sizeof(double*) * rows);
 
+    for (i = 0; i < rows; i ++) rep_p[i] = data_p + i * rows;
+
+    return rep_p;
+}
+
+static MTXMatrix _alloc (unsigned rows, unsigned columns) {
+    MTXMatrix mtx_return = (MTXMatrix) malloc(sizeof(struct MTXMatrix_ST));
+
     mtx_return->rows = rows;
     mtx_return->columns = columns;
-    mtx_return->rep_p = rep_p;
-
-    for (i = 0; i < rows; i ++) rep_p[i] = data_p + i * rows;
+    mtx_return->rep_p = _allocRep(rows, columns);
 
     return mtx_return;
 }
@@ -94,7 +99,23 @@ void mtxSetElement (MTXMatrix self, unsigned i, unsigned j, double num) {
 }
 
 void mtxTranspose (MTXMatrix self) {
+    unsigned aux;
+    int i, j;
+    double** new_rep_p = _allocRep(self->columns, self->rows);
 
+    for (i = 0; i < self->columns; i ++)
+        new_rep_p[i] = self->rep_p[0] + i * self->columns;
+
+    for (i = 0; i < self->rows; i ++)
+        for (j = 0; j < self->columns; j ++) {
+            new_rep_p[j][i] = self->rep_p[i][j];
+        }
+
+/*    free(self->rep_p);*/
+    aux = self->rows;
+    self->rows = self->columns;
+    self->columns = aux;
+    self->rep_p = new_rep_p;
 }
 
 void mtxScalarMul (MTXMatrix self, double num) {
