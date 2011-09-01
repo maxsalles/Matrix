@@ -33,7 +33,7 @@ void mtxAddRow (MTXMatrix self, unsigned i0, unsigned i1);
 void mtxSubRow (MTXMatrix self, unsigned i0, unsigned i1);
 
 MTXMatrix mtxGetRotationMatrix(MTXMatrix self, unsigned i, unsigned j);
-MTXMatrix mtxGetEigenvalues (MTXMatrix self);
+MTXMatrix mtxGetEigenvalues (MTXMatrix self, double tolerance);
 
 void mtxPrint (const MTXMatrix self);
 

@@ -40,9 +40,9 @@ int main (void) {
         for (j = 0; j < 3; j++)
             mtxSetElement(matrix, i, j, mtx_aux[i][j]);
 
-    eigenvalues = mtxGetEigenvalues(matrix);
+    eigenvalues = mtxGetEigenvalues(matrix, 0.001);
 /*    mtxTranspose(mtx2);*/
-/*    mtxPrint(mtx2);*/
+    mtxPrint(eigenvalues);
 
 /*    mtxPrint(mtxMul(mtx1, mtx2));*/
 

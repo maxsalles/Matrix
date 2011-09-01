@@ -8,8 +8,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <float.h>
 
 #include "matrix.h"
+
+#define _ABS(X) ((X) < 0.0 ? -1.0 * (X) : (X))
 
 /* ========================================================================== */
 
@@ -38,6 +41,46 @@ static MTXMatrix _alloc (unsigned rows, unsigned columns) {
     mtx_return->rep_p = _allocRep(rows, columns);
 
     return mtx_return;
+}
+
+static MTXMatrix _getEigenvaluesIteration (MTXMatrix matrix) {
+    int i, j, n = 0;
+    MTXMatrix aux = NULL, Q = NULL, R = NULL, result = NULL;
+    MTXMatrix rotation_matrices[
+        ((int) pow(matrix->rows, 2) - matrix->rows) / 2
+    ];
+
+    /* Begin calculate R matrix */
+    for (i = 0; i < matrix->rows; i ++)
+        for (j = 0; j < matrix->columns; j ++)
+            if (j < i) {
+                rotation_matrices[n] = mtxGetRotationMatrix(matrix, i, j);
+                n ++;
+            }
+
+    R = mtxNew(matrix->rows, matrix->columns);
+    for (i = 0; i < n; i ++) {
+        aux = R;
+        R = mtxMul(R, rotation_matrices[i]);
+        mtxDestroy(&aux);
+    }
+    aux = R;
+    R = mtxMul(R, matrix);
+    mtxDestroy(&aux);
+
+    /* Begin calculate Q matrix */
+    Q = mtxNew(matrix->rows, matrix->columns);
+    for (i = 0; i < n; i ++) {
+        aux = Q;
+        Q = mtxMul(aux, mtxTranspose(rotation_matrices[i]));
+        mtxDestroy(&aux);
+    }
+
+    result = mtxMul(R, Q);
+    mtxDestroy(&R);
+    mtxDestroy(&Q);
+
+    return result;
 }
 
 /* ========================================================================== */
@@ -211,45 +254,32 @@ MTXMatrix mtxGetRotationMatrix(MTXMatrix self, unsigned i, unsigned j) {
     return NULL;
 }
 
-MTXMatrix mtxGetEigenvalues (MTXMatrix self) {
-    int i, j, n = 0;
-    MTXMatrix aux = NULL, Q = NULL, R = NULL;
-    MTXMatrix rotation_matrices[((int) pow(self->rows, 2) - self->rows) / 2];
+MTXMatrix mtxGetEigenvalues (MTXMatrix self, double tolerance) {
+    int i, j;
+    double error = 0.0;
+    MTXMatrix cur_it_matrix = _getEigenvaluesIteration(self), aux = NULL;
+    MTXMatrix eigenvalues = mtxNew(1, self->rows);
 
-    /*
-    ** Begin calculate R matrix
-    */
-    for (i = 0; i < self->rows; i ++)
-        for (j = 0; j < self->columns; j ++)
-            if (j < i) {
-                rotation_matrices[n] = mtxGetRotationMatrix(self, i, j);
-                n ++;
+    for (;;) {
+        for (i = 1; i < self->rows; i ++)
+            for (j = 0; j < i; j ++) {
+                if (error < _ABS(cur_it_matrix->rep_p[i][j]))
+                    error = _ABS(cur_it_matrix->rep_p[i][j]);
             }
 
-    R = mtxNew(self->rows, self->columns);
-    for (i = 0; i < n; i ++) {
-        aux = R;
-        R = mtxMul(R, rotation_matrices[i]);
-        mtxDestroy(&aux);
-    }
-    aux = R;
-    R = mtxMul(R, self);
-    mtxDestroy(&aux);
+        if (error < tolerance) break;
 
-    /*
-    ** Begin calculate Q matrix
-    */
-    Q = mtxNew(self->rows, self->columns);
-    for (i = 0; i < n; i ++) {
-        printf("%i", i); getchar();
-        aux = Q;
-        Q = mtxMul(aux, mtxTranspose(rotation_matrices[i]));
-        mtxDestroy(&aux);
+        error = 0.0;
+        aux = _getEigenvaluesIteration(cur_it_matrix);
+        mtxDestroy(&cur_it_matrix);
+        cur_it_matrix = aux;
     }
 
+    for (i = 0; i < cur_it_matrix->rows; i ++)
+        eigenvalues->rep_p[0][i] = cur_it_matrix->rep_p[i][i];
+    mtxDestroy(&cur_it_matrix);
 
-
-    return NULL;
+    return eigenvalues;
 }
 
 void mtxPrint (MTXMatrix self) {
