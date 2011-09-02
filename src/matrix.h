@@ -14,6 +14,9 @@ typedef struct MTXMatrix_ST* MTXMatrix;
 
 MTXMatrix mtxNew (unsigned rows, unsigned columns);
 MTXMatrix mtxCopy (const MTXMatrix matrix);
+void mtxIniti (MTXMatrix self, int vet[]);
+void mtxInitf (MTXMatrix self, float vet[]);
+void mtxInitd (MTXMatrix self, double vet[]);
 void mtxDestroy (MTXMatrix* self_p);
 
 double mtxGetElement (const MTXMatrix self, unsigned i, unsigned j);

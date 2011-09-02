@@ -45,12 +45,11 @@ static MTXMatrix _alloc (unsigned rows, unsigned columns) {
 
 static MTXMatrix _getEigenvaluesIteration (MTXMatrix matrix) {
     int i, j, n = 0;
+    int rotation_m_len = ((int) pow(matrix->rows, 2) - matrix->rows) / 2;
     MTXMatrix aux = NULL, Q = NULL, R = NULL, result = NULL;
-    MTXMatrix rotation_matrices[
-        ((int) pow(matrix->rows, 2) - matrix->rows) / 2
-    ];
+    MTXMatrix rotation_matrices[rotation_m_len];
 
-    /* Begin calculate R matrix */
+    /* Calculate rotations matrices */
     for (i = 0; i < matrix->rows; i ++)
         for (j = 0; j < matrix->columns; j ++)
             if (j < i) {
@@ -58,8 +57,9 @@ static MTXMatrix _getEigenvaluesIteration (MTXMatrix matrix) {
                 n ++;
             }
 
+    /* Begin calculate R matrix */
     R = mtxNew(matrix->rows, matrix->columns);
-    for (i = 0; i < n; i ++) {
+    for (i = n - 1; i >= 0; i --) {
         aux = R;
         R = mtxMul(R, rotation_matrices[i]);
         mtxDestroy(&aux);
@@ -73,6 +73,12 @@ static MTXMatrix _getEigenvaluesIteration (MTXMatrix matrix) {
     for (i = 0; i < n; i ++) {
         aux = Q;
         Q = mtxMul(aux, mtxTranspose(rotation_matrices[i]));
+        mtxDestroy(&aux);
+    }
+
+    /* Destroy rotations matrices */
+    for (i = 0; i < rotation_m_len; i ++) {
+        aux = rotation_matrices[i];
         mtxDestroy(&aux);
     }
 
@@ -105,6 +111,30 @@ MTXMatrix mtxCopy (const MTXMatrix self) {
             mtx_return->rep_p[i][j] = self->rep_p[i][j];
 
     return mtx_return;
+}
+
+void mtxIniti (MTXMatrix self, int vet[]) {
+    int i, j, k;
+
+    for (i = 0, k = 0; i < self->rows; i ++, k ++)
+        for (j = 0; j < self->columns; j ++, k ++)
+            self->rep_p[i][j] = (double) vet[k];
+}
+
+void mtxInitf (MTXMatrix self, float vet[]) {
+    int i, j, k;
+
+    for (i = 0, k = 0; i < self->rows; i ++, k ++)
+        for (j = 0; j < self->columns; j ++, k ++)
+            self->rep_p[i][j] = (double) vet[k];
+}
+
+void mtxInitd (MTXMatrix self, double vet[]) {
+    int i, j, k = 0;
+
+    for (i = 0; i < self->rows; i ++)
+        for (j = 0; j < self->columns; j ++, k ++)
+            self->rep_p[i][j] = vet[k];
 }
 
 void mtxDestroy (MTXMatrix* self_p) {
@@ -158,26 +188,6 @@ MTXMatrix mtxTranspose (MTXMatrix self) {
     self->rep_p = new_rep_p;
 
     return self;
-
-/*    int i, j, aux;*/
-/*    double aux_element;*/
-/*    double** new_rep_p = (double**) malloc(sizeof(double*) * self->columns);*/
-
-/*    for (j = 0; j < self->columns; j ++)*/
-/*        new_rep_p[j] = self->rep_p[0] + j * self->rows;*/
-
-/*    for (i = 0; i < self->rows; i ++)*/
-/*        for (j = i + 1; j < self->columns; j ++) {*/
-/*            aux_element = new_rep_p[j][i];*/
-/*            new_rep_p[j][i] = self->rep_p[i][j];*/
-/*            self->rep_p[i][j] = aux_element;*/
-/*        }*/
-
-/*    free(self->rep_p);*/
-/*    aux = self->rows;*/
-/*    self->rows = self->columns;*/
-/*    self->columns = aux;*/
-/*    self->rep_p = new_rep_p;*/
 }
 
 void mtxScalarMul (MTXMatrix self, double num) {
@@ -229,7 +239,7 @@ void mtxChangedRows (MTXMatrix self, unsigned i0, unsigned i1) {
 
 }
 
-MTXMatrix mtxGetRotationMatrix(MTXMatrix self, unsigned i, unsigned j) {
+MTXMatrix mtxGetRotationMatrix (MTXMatrix self, unsigned i, unsigned j) {
     if (self->rows == self->columns) {
         MTXMatrix matrix_return = mtxNew(self->rows, self->columns);
         double cos, sin;

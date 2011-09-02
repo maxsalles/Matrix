@@ -3,48 +3,52 @@
 #include "matrix.h"
 
 int main (void) {
-    int i, j;
-    double mtx_aux[3][3] = {
-        { 2.0, 0.0, 1.0 },
-        { 0.0, 1.0, 0.0 },
-        { 1.0, 0.0, 1.0 }
+    double mtx_aux1[9] = {
+        2.0, 0.0, 1.0,
+        0.0, 1.0, 0.0,
+        1.0, 0.0, 1.0
     };
 
-    double mtx_aux1[3][3] = {
-        { 4.0, -3.0, 2.0 },
-        { 3.0, -3.0, 0.0 },
-        { 5.0, -3.0, 1.0 }
+    double mtx_aux2[9] = {
+        0.0, -2.0, 2.0,
+        1.0,  3.0, 3.0,
+        2.0,  3.0, 1.0
     };
 
-    double mtx_aux2[3][2] = {
-        {  2.0,  3.0 },
-        {  1.0, -4.0 },
-        { -6.0,  1.0 }
+    double mtx_aux3[4] = {
+        3.0, 1.0,
+        1.0, 3.0
     };
 
-    MTXMatrix matrix = mtxNew(3, 3);
-    MTXMatrix eigenvalues = NULL;
 
-    MTXMatrix mtx1 = mtxNew(3, 3);
-    MTXMatrix mtx2 = mtxNew(3, 2);
 
-    for (i = 0; i < 3; i ++)
-        for (j = 0; j < 3; j ++)
-            mtxSetElement(mtx1, i, j, mtx_aux1[i][j]);
+    MTXMatrix matrix1 = mtxNew(3, 3), matrix2 = mtxNew(3, 3), matrix3 = mtxNew(2, 2);
+    MTXMatrix eigenvalues1 = NULL, eigenvalues2 = NULL, eigenvalues3 = NULL;
 
-    for (i = 0; i < 3; i ++)
-        for (j = 0; j < 2; j ++)
-            mtxSetElement(mtx2, i, j, mtx_aux2[i][j]);
+    mtxInitd(matrix1, mtx_aux1);
+    mtxPrint(matrix1);
+    eigenvalues1 = mtxGetEigenvalues(matrix1, 0.001);
 
-    for (i = 0; i < 3; i++)
-        for (j = 0; j < 3; j++)
-            mtxSetElement(matrix, i, j, mtx_aux[i][j]);
+    printf("Eigenvalues:\n");
+    mtxPrint(eigenvalues1);
 
-    eigenvalues = mtxGetEigenvalues(matrix, 0.001);
-/*    mtxTranspose(mtx2);*/
-    mtxPrint(eigenvalues);
+    puts("=================================================");
 
-/*    mtxPrint(mtxMul(mtx1, mtx2));*/
+    mtxInitd(matrix2, mtx_aux2);
+    mtxPrint(matrix2);
+    eigenvalues2 = mtxGetEigenvalues(matrix2, 0.001);
+
+    printf("Eigenvalues:\n");
+    mtxPrint(eigenvalues2);
+
+    puts("=================================================");
+
+    mtxInitd(matrix3, mtx_aux3);
+    mtxPrint(matrix3);
+    eigenvalues3 = mtxGetEigenvalues(matrix3, 0.001);
+
+    printf("Eigenvalues:\n");
+    mtxPrint(eigenvalues3);
 
     return 0;
 }
