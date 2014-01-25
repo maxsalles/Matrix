@@ -302,6 +302,15 @@ void mtxPrint (MTXMatrix self) {
     }
 }
 
+unsigned int mtxGetRowNum(MTXMatrix self)
+{
+    return self->rows;
+}
+
+unsigned int mtxGetColNum(MTXMatrix self)
+{
+    return self->columns;
+}
 /* ========================================================================== */
 
 #endif
