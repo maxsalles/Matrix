@@ -39,6 +39,8 @@ MTXMatrix mtxGetRotationMatrix(MTXMatrix self, unsigned i, unsigned j);
 MTXMatrix mtxGetEigenvalues (MTXMatrix self, double tolerance);
 
 void mtxPrint (const MTXMatrix self);
+unsigned int mtxGetRowNum(MTXMatrix self);
+unsigned int mtxGetColNum(MTXMatrix self);
 
 /* ========================================================================== */
 
